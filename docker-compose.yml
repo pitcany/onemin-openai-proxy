@@ -1,0 +1,27 @@
+services:
+  onemin-proxy:
+    build: .
+    container_name: onemin-openai-proxy
+    ports:
+      - "${PROXY_PORT:-8080}:8080"
+    environment:
+      - ONE_MIN_AI_API_KEY=${ONE_MIN_AI_API_KEY}
+      - ONE_MIN_AI_BASE_URL=${ONE_MIN_AI_BASE_URL:-https://api.1min.ai}
+      - PROXY_HOST=0.0.0.0
+      - PROXY_PORT=8080
+      - DEFAULT_1MIN_MODEL=${DEFAULT_1MIN_MODEL:-gpt-4o-mini}
+      - DEFAULT_WEBSEARCH=${DEFAULT_WEBSEARCH:-false}
+      - DEFAULT_NUM_OF_SITE=${DEFAULT_NUM_OF_SITE:-1}
+      - DEFAULT_MAX_WORD=${DEFAULT_MAX_WORD:-500}
+      - REQUEST_TIMEOUT_SECS=${REQUEST_TIMEOUT_SECS:-60}
+      - RETRIES=${RETRIES:-2}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENABLE_REQUEST_LOGGING=${ENABLE_REQUEST_LOGGING:-false}
+      - EXTRA_MODELS=${EXTRA_MODELS:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
